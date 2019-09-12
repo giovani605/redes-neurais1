@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from Tarefa3.Classes import Network
+from Tarefa3 import Network
 
 # Exercicio 3.1
 n_iter_train = 100
