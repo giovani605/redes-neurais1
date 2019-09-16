@@ -158,7 +158,7 @@ def gerarDadosAdaline(qtd):
         else:
             return a
 
-    for p in np.linspace(-np.pi, 2*np.pi, qtd):
+    for p in np.linspace(0, 2*np.pi, qtd):
         z = p
         f1 = corrigir(np.sin(z))
         f2 = corrigir(np.cos(z))
@@ -169,7 +169,7 @@ def gerarDadosAdaline(qtd):
     return np.array(listaInput), np.array(lista)
 
 
-dadosX, DadosY = gerarDadosAdaline(15)
+dadosX, DadosY = gerarDadosAdaline(30)
 print(dadosX)
 print(DadosY)
 
@@ -178,7 +178,7 @@ print(DadosY)
 
 
 class MyAdaline(object):
-    def __init__(self, no_of_inputs, threshold=100, learning_rate=0.01, erro_delta_minimo=0.5):
+    def __init__(self, no_of_inputs, threshold=100, learning_rate=0.01, erro_delta_minimo=0.1):
         self.threshold = threshold
         self.learning_rate = learning_rate
         self.weights = np.random.rand(no_of_inputs + 1)
@@ -221,7 +221,7 @@ class MyAdaline(object):
             erroMedio = 0
             for inputs, label in zip(training_inputs, labels):
                 prediction = self.predict(inputs)
-                erro = ((label - prediction))
+                erro = ((label - prediction)**2)
                 #print("previ: ", prediction, " o esperado foi: ", label)
                 #print("erro foi: ", erro)
                 erroMedio += erro/(len(labels))
@@ -229,8 +229,8 @@ class MyAdaline(object):
             erroMedio = erroMedio / 2
             print("Erro Medio ", erroMedio)
             print("Variacao do erro:")
-            print((erroAnterior - erroMedio))
-            if abs((erroMedio)) <= self.erro_delta_minimo:
+            print((erroMedio - erroAnterior))
+            if abs((erroMedio - erroAnterior)) <= self.erro_delta_minimo:
                 break
             else:
                 print("Pesos no teste")
@@ -238,22 +238,29 @@ class MyAdaline(object):
                 print("inputs:")
 
                 for inputs in training_inputs:
+                 #   print(inputs)
                     self.weights[1:] += self.learning_rate * \
-                        erroMedio * inputs[:]
+                        erroMedio * (inputs)
+                  #  self.printPesos()
                 self.weights[0] += self.learning_rate * erroMedio
-                print("Pesos corrigidos")
-                self.printPesos()
+                #print("Pesos corrigidos")
+                # self.printPesos()
                 erroAnterior = erroMedio
 
     def printPesos(self):
         print(self.weights)
 
 
-ada = MyAdaline(3, learning_rate=0.0001, threshold=100)
+#dadosX = np.random.shuffle(dadosX, DadosY)
+
+ada = MyAdaline(3, learning_rate=0.0001, threshold=50)
 ada.trainBatch(dadosX, DadosY)
 
 
 for row in dadosX:
     print(ada.predict(row))
+
+    # %%
+
 
 # %%
