@@ -178,10 +178,11 @@ print(DadosY)
 
 
 class MyAdaline(object):
-    def __init__(self, no_of_inputs, threshold=100, learning_rate=0.01, erro_delta_minimo=0.1):
+    def __init__(self, no_of_inputs, threshold=100, learning_rate=0.01, erro_delta_minimo=0.001):
         self.threshold = threshold
         self.learning_rate = learning_rate
         self.weights = np.random.rand(no_of_inputs + 1)
+        self.weights[0] = -np.pi
         self.erro_delta_minimo = erro_delta_minimo
 
     # Modficar adaline para fazer ...
