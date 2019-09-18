@@ -148,7 +148,6 @@ for row in matrizX:
 
 def gerarDadosAdaline(qtd):
     lista = []
-    listaInput = []
     a = np.sin(np.pi)
     print(a)
 
@@ -163,15 +162,22 @@ def gerarDadosAdaline(qtd):
         f1 = corrigir(np.sin(z))
         f2 = corrigir(np.cos(z))
         f3 = z
-        listaInput.append([f1, f2, f3])
         output = -np.pi + (0.565*f1)+(2.657*f2)+(0.674*f3)
-        lista.append([output])
-    return np.array(listaInput), np.array(lista)
+        lista.append([f1, f2, f3, output])
+    print('sdasadsa')
+    lista = np.array(lista)
+    np.random.shuffle(lista)
+    return lista[:,:3],lista[:,3]
 
+def testarAdaline(clf,X,y):
+    erroMedio = 0
+    for row,label in zip(X,y):
+        predicao = clf.predict(row)
+        erroMedio += abs((label - predicao))
+    print("Erro medio do treino: ", erroMedio/len(y))
 
-dadosX, DadosY = gerarDadosAdaline(30)
-print(dadosX)
-print(DadosY)
+dadosX,dadosY = gerarDadosAdaline(15)
+dadosX
 
 # %%
 # Adaline
@@ -197,20 +203,15 @@ class MyAdaline(object):
             erroMedio = 0
             for inputs, label in zip(training_inputs, labels):
                 prediction = self.predict(inputs)
-                erro = 0.5 * ((label - prediction) * (label - prediction))
+                erro = 0.5 * ((label - prediction)**2)
                 erroMedio += erro/(len(labels))
-                # print("_____________________")
-                # print("Entrada : ", inputs)
-                # print("Saida: ",prediction)
-                # print("Label: ",label)
-                self.printPesos()
                 self.weights[1:] += self.learning_rate * erro * inputs
                 self.weights[0] += self.learning_rate * erro
-                # print("corrigindo")
-                # self.printPesos()
+                
             print("Erro Medio ", erroMedio)
-            #  print(abs((erroAnterior - erroMedio)))
-            if abs((erroMedio)) <= self.erro_delta_minimo:
+            print("Variacao do erro:")
+            print((erroMedio - erroAnterior))
+            if abs((erroMedio - erroAnterior)) <= self.erro_delta_minimo:
                 break
             else:
                 erroAnterior = erroMedio
@@ -222,17 +223,15 @@ class MyAdaline(object):
             erroMedio = 0
             for inputs, label in zip(training_inputs, labels):
                 prediction = self.predict(inputs)
-                erro = ((label - prediction)**2)
+                erro = 0.5 * ((label - prediction)**2)
                 #print("previ: ", prediction, " o esperado foi: ", label)
                 #print("erro foi: ", erro)
                 erroMedio += erro/(len(labels))
-
-            erroMedio = erroMedio / 2
             print("Erro Medio ", erroMedio)
             print("Variacao do erro:")
             print((erroMedio - erroAnterior))
             if abs((erroMedio - erroAnterior)) <= self.erro_delta_minimo:
-                break
+                print("eqm minimo")
             else:
                 print("Pesos no teste")
                 self.printPesos()
@@ -253,15 +252,49 @@ class MyAdaline(object):
 
 
 #dadosX = np.random.shuffle(dadosX, DadosY)
+# In[] 
+# tarefa 3.2
+dadosX ,dadosY= gerarDadosAdaline(15)
 
 ada = MyAdaline(3, learning_rate=0.0001, threshold=50)
-ada.trainBatch(dadosX, DadosY)
-
-
-for row in dadosX:
-    print(ada.predict(row))
+ada.train(dadosX, dadosY)
+testarAdaline(ada,dadosX,dadosY)
 
     # %%
 
 
-# %%
+# In[]
+# tarefa 3.3
+dadosX ,dadosY= gerarDadosAdaline(15)
+ada = MyAdaline(3, learning_rate=0.0001, threshold=50)
+ada.trainBatch(dadosX, DadosY)
+
+testarAdaline(ada,dadosX,DadosY)
+
+# In[]
+# tarefa 3.4
+dadosX,DadosY = gerarDadosAdaline(30)
+
+# dividir dados
+
+####
+
+ada = MyAdaline(3, learning_rate=0.0001, threshold=50)
+ada.trainBatch(dadosX, DadosY)
+
+## testar
+
+testarAdaline(ada,dadosX,DadosY)
+
+# In[]
+# tarefa 3.5
+dadosX,DadosY = gerarDadosAdaline(50)
+
+# dividir dados
+
+####
+
+ada = MyAdaline(3, learning_rate=0.0001, threshold=50)
+ada.trainBatch(dadosX, DadosY)
+
+testarAdaline(ada,dadosX,DadosY)
