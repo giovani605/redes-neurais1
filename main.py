@@ -209,34 +209,34 @@ testarAdaline(ada,dadosX,dadosY)
 # tarefa 3.3
 dadosX ,dadosY= gerarDadosAdaline(15)
 ada = MyAdaline(3, learning_rate=0.0001, threshold=50)
-ada.trainBatch(dadosX, DadosY)
+ada.trainBatch(dadosX, dadosY)
 
-testarAdaline(ada,dadosX,DadosY)
+testarAdaline(ada,dadosX,dadosY)
 
 # In[]
 # tarefa 3.4
-dadosX,DadosY = gerarDadosAdaline(30)
+dadosX,dadosY = gerarDadosAdaline(30)
 
 # dividir dados
 
 ####
 
 ada = MyAdaline(3, learning_rate=0.0001, threshold=50)
-ada.trainBatch(dadosX, DadosY)
+ada.trainBatch(dadosX, dadosY)
 
 ## testar
 
-testarAdaline(ada,dadosX,DadosY)
+testarAdaline(ada,dadosX,dadosY)
 
 # In[]
 # tarefa 3.5
-dadosX,DadosY = gerarDadosAdaline(50)
+dadosX,dadosY = gerarDadosAdaline(50)
 
 # dividir dados
 
 ####
 
 ada = MyAdaline(3, learning_rate=0.0001, threshold=50)
-ada.trainBatch(dadosX, DadosY)
+ada.trainBatch(dadosX, dadosY)
 
-testarAdaline(ada,dadosX,DadosY)
+testarAdaline(ada,dadosX,dadosY)
