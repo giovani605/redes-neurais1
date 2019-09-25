@@ -138,8 +138,12 @@ class MLPCamada(object):
     def printPesos(self):
         print(self.weights)
 
+    def corrigirErro(self,erro,learning_rate):
+        self.weights[1:] += learning_rate * erro 
+        self.weights[0] += learning_rate * erro
 
 
+# In[]
 class MLP(object):
     def __init__(self,hidden_layer=1,no_neuroios_hidden=2,no_entradas=2,no_saidas=1
     ,threshold=100, learning_rate=0.01, erro_delta_minimo=0.001):
@@ -164,7 +168,8 @@ class MLP(object):
         self.listaCamadas.append(camfinal)
     
     def printPesosTodos(self):
-        for camada in self.listaCamadas:
+        for camada,i in zip(self.listaCamadas,range(len(self.listaCamadas))):
+            print("camada ",i)
             camada.printPesos()
 
 
@@ -175,12 +180,44 @@ class MLP(object):
             entrada = resultado
         return entrada
 
+    def corrigiErroBackPropagation(self,erro):
+        for camada in self.listaCamadas:
+            camada.corrigirErro(erro,self.learning_rate)
+            
+
+    def train(self,X,y):
+        erroAnterior = 0
+        for n in range(self.threshold):
+            print("Treianmento ", n)
+            erroMedio = 0
+            for inputs, label in zip(X, y):
+                prediction = self.predict(inputs)
+                erro = 0.5 * ((label - prediction)**2)
+                erroMedio += erro/(len(y))
+            self.corrigiErroBackPropagation(erro)
+            self.printPesosTodos()
+            
+
+
 
 mlp = MLP()
 mlp.printPesosTodos()
-a = np.array((0,1))
-print('predicao')
-print(mlp.predict(a))
+dadosX = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
+dadosY = np.array([0,1,1,0])
+mlp.train(dadosX,dadosY)
+
+
+'''
+print("Erro Medio ", erroMedio)
+            print("Variacao do erro:")
+            print((erroMedio - erroAnterior))
+            if abs((erroMedio - erroAnterior)) <= self.erro_delta_minimo:
+                break
+            else:
+                erroAnterior = erroMedio
+
+'''
+
 
 # In[]
 
