@@ -130,7 +130,6 @@ class MLPCamada(object):
         lista = []
         for i in range(self.no_neuronios):
             neuron = self.weights[:,i]
-            print(neuron)
             res = np.sum(np.dot(inputs, neuron[1:]) + neuron[0]) 
             lista.append(res)
         
@@ -139,13 +138,53 @@ class MLPCamada(object):
     def printPesos(self):
         print(self.weights)
 
-m = MLPCamada()
-m.printPesos()
-a = np.array((0,1))
-print(m.predict(a))
+
+
+class MLP(object):
+    def __init__(self,hidden_layer=1,no_neuroios_hidden=2,no_entradas=2,no_saidas=1
+    ,threshold=100, learning_rate=0.01, erro_delta_minimo=0.001):
+        self.hidden_layer = hidden_layer
+        self.no_neuroios_hidden = no_neuroios_hidden
+        self.no_entradas = no_entradas
+        self.no_saidas = no_saidas
+        self.learning_rate = learning_rate
+        self.threshold = threshold
+        self.erro_delta_minimo=erro_delta_minimo
+        self.listaCamadas = []
+        for i in range(hidden_layer):
+            n_entradas = 0
+            if i == 0:
+                n_entradas = no_entradas
+            else:
+                n_entradas = no_neuroios_hidden
+            m = MLPCamada(no_neuronios=self.no_neuroios_hidden,no_entradas=n_entradas)
+            self.listaCamadas.append(m)
+        # cria a camada final
+        camfinal = MLPCamada(no_neuronios=self.no_saidas,no_entradas=no_neuroios_hidden)
+        self.listaCamadas.append(camfinal)
     
+    def printPesosTodos(self):
+        for camada in self.listaCamadas:
+            camada.printPesos()
 
 
+    def predict(self,X):
+        entrada = X
+        for camada in self.listaCamadas:
+            resultado = camada.predict(entrada)
+            entrada = resultado
+        return entrada
+
+
+mlp = MLP()
+mlp.printPesosTodos()
+a = np.array((0,1))
+print('predicao')
+print(mlp.predict(a))
+
+# In[]
+
+#%%
 class MyMLP(object):
     def __init__(self, no_of_inputs,no_camadas=2,no_saidas=1, threshold=100, learning_rate=0.01, erro_delta_minimo=0.001):
         self.threshold = threshold
@@ -211,5 +250,3 @@ class MyMLP(object):
 
     def printPesos(self):
         print(self.weights)
-
-#%%
