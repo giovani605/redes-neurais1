@@ -1,16 +1,22 @@
 # In[]
 import numpy as np  # Biblioteca de manipulacao de arrays Numpy
 
+
 class MLPCamada(object):
-    def __init__(self,no_neuronios=2,no_entradas=2):
+    def __init__(self, no_neuronios=2, no_entradas=2):
+        # matriz de pesos para cada  neuronio
         self.weights = np.random.rand(no_entradas + 1, no_neuronios)
         self.no_neuronios = no_neuronios
         self.no_entradas = no_entradas
-    
-    
+        # Vetor de erro de cada neuronio
+        self.no_erro = np.random.rand(no_neuronios)
+
+    def getErroCamada(self):
+        return self.no_erro
+
     def predictFunc(self, x):
-        return (1 / (1 + (pow(np.e,-x))))
-    
+        return (1 / (1 + (pow(np.e, -x))))
+
     def derivadaFunc(self, x):
         return self.predictFunc(x)*(1 - self.predictFunc(x))
 
@@ -18,20 +24,28 @@ class MLPCamada(object):
         # multipla as entradas pelo pesos
         lista = []
         for i in range(self.no_neuronios):
-            neuron = self.weights[:,i]
-            res = self.predictFunc(np.sum(np.dot(inputs, neuron[1:]) + neuron[0])) 
+            neuron = self.weights[:, i]
+            res = self.predictFunc(
+                np.sum(np.dot(inputs, neuron[1:]) + neuron[0]))
             lista.append(res)
-        
+
         return np.array(lista)
 
     def printPesos(self):
         print(self.weights)
 
-    def corrigirErro(self,erro,learning_rate):
+    def corrigirErro(self, entrada, erro, learning_rate):
+        # como corrigidir cada elemento certo?
+        self.weights[1:] += self.deltaPesoErro(1,
+                                               self.no_erro[1:], learning_rate)
+        self.weights[0] += self.deltaPesoErro(1,
+                                              self.no_erro[0], learning_rate)
+
+    def guardarErro(self, erro, learning_rate):
         # como pegar o input?
         # como corrigidir cada elemento certo?
-        self.weights[1:] += self.deltaPesoErro(1,erro,learning_rate)
-        self.weights[0] += self.deltaPesoErro(1,erro,learning_rate)
+        self.no_erro[1:] += self.deltaPesoErro(1, erro, learning_rate)
+        #self.no_erro[0] += self.deltaPesoErro(1, erro, learning_rate)
 
     def deltaPesoErro(self, x, erro, learning_rate):
         # func que calcula o delta para um peso
@@ -39,21 +53,21 @@ class MLPCamada(object):
         # como calcular para uma camada toda?
         deltaPeso = learning_rate * erro * self.derivadaFunc(x) * x
         return deltaPeso
-    
-    
+
+    def calcularErroBackProgation(self):
+        print('implementado')
 
 
 # In[]
 class MLP(object):
-    def __init__(self,hidden_layer=1,no_neuroios_hidden=2,no_entradas=2,no_saidas=2
-    ,threshold=10, learning_rate=0.01, erro_delta_minimo=0.001):
+    def __init__(self, hidden_layer=1, no_neuroios_hidden=2, no_entradas=2, no_saidas=2, threshold=10, learning_rate=0.01, erro_delta_minimo=0.001):
         self.hidden_layer = hidden_layer
         self.no_neuroios_hidden = no_neuroios_hidden
         self.no_entradas = no_entradas
         self.no_saidas = no_saidas
         self.learning_rate = learning_rate
         self.threshold = threshold
-        self.erro_delta_minimo=erro_delta_minimo
+        self.erro_delta_minimo = erro_delta_minimo
         self.listaCamadas = []
         for i in range(hidden_layer):
             n_entradas = 0
@@ -61,37 +75,52 @@ class MLP(object):
                 n_entradas = no_entradas
             else:
                 n_entradas = no_neuroios_hidden
-            m = MLPCamada(no_neuronios=self.no_neuroios_hidden,no_entradas=n_entradas)
+            m = MLPCamada(no_neuronios=self.no_neuroios_hidden,
+                          no_entradas=n_entradas)
             self.listaCamadas.append(m)
         # cria a camada final
-        camfinal = MLPCamada(no_neuronios=self.no_saidas,no_entradas=no_neuroios_hidden)
+        camfinal = MLPCamada(no_neuronios=self.no_saidas,
+                             no_entradas=no_neuroios_hidden)
         self.listaCamadas.append(camfinal)
-    
+
     def printPesosTodos(self):
-        for camada,i in zip(self.listaCamadas,range(len(self.listaCamadas))):
-            print("camada ",i)
+        for camada, i in zip(self.listaCamadas, range(len(self.listaCamadas))):
+            print("camada ", i)
             camada.printPesos()
 
-
-    def predict(self,X):
+    def predict(self, X):
         entrada = X
         for camada in self.listaCamadas:
             resultado = camada.predict(entrada)
             entrada = resultado
         return entrada
 
-    def corrigiErroBackPropagation(self,erro):
+    def corrigiErroBackPropagation(self, erro):
         # corrigir o erro da ultima
             # como ver o input da camada
 
-
-        # para as outras camadas tenho que calcular o erro back propagado        
+        # para as outras camadas tenho que calcular o erro back propagado
             # como calcular o input
+        x = 0
+        erroBack = []
+        camadaFrente = {}
         for camada in reversed(self.listaCamadas):
-            camada.corrigirErro(erro,self.learning_rate)
-            
+            if(x == 0):
+                # ultima camada
+                # erro ja calculado
+                print('ultima camada')
+                x = 1
+                camadaFrente = camada
+                camada.guardarErro(erro, self.learning_rate)
 
-    def train(self,X,y):
+            else:
+                print('nao eh ultima camada')
+                # primeira coisa eh calcular o erro back progradado
+                erroCamadaFrente = camadaFrente.calcularErroBackProgation()
+                camada.guardarErro(erroCamadaFrente, self.learning_rate)
+                camadaFrente = camada
+
+    def train(self, X, y):
         erroAnterior = 0
         for n in range(self.threshold):
             print("Treianmento ", n)
@@ -101,18 +130,16 @@ class MLP(object):
                 erro = 0.5 * ((label - prediction)**2)
                 print(erro)
                 erroMedio += erro/(len(y))
-            
-            self.corrigiErroBackPropagation(erro)
-            #self.printPesosTodos()
-            
 
+            self.corrigiErroBackPropagation(erro)
+            # self.printPesosTodos()
 
 
 mlp = MLP()
 mlp.printPesosTodos()
 dadosX = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
 dadosY = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
-mlp.train(dadosX,dadosY)
+mlp.train(dadosX, dadosY)
 
 
 '''
@@ -129,9 +156,9 @@ print("Erro Medio ", erroMedio)
 
 # In[]
 
-#%%
+# %%
 class MyMLP(object):
-    def __init__(self, no_of_inputs,no_camadas=2,no_saidas=1, threshold=100, learning_rate=0.01, erro_delta_minimo=0.001):
+    def __init__(self, no_of_inputs, no_camadas=2, no_saidas=1, threshold=100, learning_rate=0.01, erro_delta_minimo=0.001):
         self.threshold = threshold
         self.learning_rate = learning_rate
         self.weights = np.random.rand(no_of_inputs + 1)
@@ -153,7 +180,7 @@ class MyMLP(object):
                 erroMedio += erro/(len(labels))
                 self.weights[1:] += self.learning_rate * erro * inputs
                 self.weights[0] += self.learning_rate * erro
-                
+
             print("Erro Medio ", erroMedio)
             print("Variacao do erro:")
             print((erroMedio - erroAnterior))
@@ -195,5 +222,3 @@ class MyMLP(object):
 
     def printPesos(self):
         print(self.weights)
-
-
