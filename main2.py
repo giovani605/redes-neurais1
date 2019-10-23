@@ -1,6 +1,6 @@
 # In[]
 import numpy as np  # Biblioteca de manipulacao de arrays Numpy
-from sklearn.neural_network import MLPClassifier
+from sklearn.neural_network import MLPClassifier,MLPRegressor
 
 
 class MLPCamada(object):
@@ -229,7 +229,8 @@ data.head()
 data2 = pd.get_dummies(data)
 data2.head()
 data2.fillna(0, inplace=True)
-mlp = MLPClassifier(hidden_layer_sizes=(20,))
+
+mlp = MLPRegressor(hidden_layer_sizes=(20,))
 dadosY = data2['total']
 dadosX = data2.drop(columns='total')
 print(dadosX.head())
