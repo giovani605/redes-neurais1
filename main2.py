@@ -1,5 +1,6 @@
 # In[]
 import numpy as np  # Biblioteca de manipulacao de arrays Numpy
+from sklearn.neural_network import MLPClassifier
 
 class MLPCamada(object):
     def __init__(self,no_neuronios=2,no_entradas=2):
@@ -43,7 +44,7 @@ class MLPCamada(object):
     
 
 
-# In[]
+
 class MLP(object):
     def __init__(self,hidden_layer=1,no_neuroios_hidden=2,no_entradas=2,no_saidas=2
     ,threshold=10, learning_rate=0.01, erro_delta_minimo=0.001):
@@ -106,15 +107,26 @@ class MLP(object):
             #self.printPesosTodos()
             
 
+# In[]
+print("exercicio 1")
+mlp = MLPClassifier(hidden_layer_sizes=(50,), max_iter=10, alpha=1e-4,
+                    solver='sgd', verbose=10, tol=1e-4, random_state=1,
+                    learning_rate_init=.1)
 
-
-mlp = MLP()
-mlp.printPesosTodos()
 dadosX = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
-dadosY = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
-mlp.train(dadosX,dadosY)
+dadosY = np.array([0, 1, 1, 0])
+mlp.fit(dadosX,dadosY)
+mlp.predict(dadosX)
 
 
+# In[]
+print("exercicio 2")
+
+# In[]
+print("exercicio 3")
+
+
+# In[]
 '''
 print("Erro Medio ", erroMedio)
             print("Variacao do erro:")
@@ -127,7 +139,7 @@ print("Erro Medio ", erroMedio)
 '''
 
 
-# In[]
+
 
 #%%
 class MyMLP(object):
