@@ -134,25 +134,6 @@ class MLP(object):
             self.corrigiErroBackPropagation(erro)
             # self.printPesosTodos()
 
-
-dadosX = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
-dadosY = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
-mlp.train(dadosX, dadosY)
-
-
-# In[]
-'''
-print("Erro Medio ", erroMedio)
-            print("Variacao do erro:")
-            print((erroMedio - erroAnterior))
-            if abs((erroMedio - erroAnterior)) <= self.erro_delta_minimo:
-                break
-            else:
-                erroAnterior = erroMedio
-
-'''
-
-
 # %%
 class MyMLP(object):
     def __init__(self, no_of_inputs, no_camadas=2, no_saidas=1, threshold=100, learning_rate=0.01, erro_delta_minimo=0.001):
@@ -219,3 +200,48 @@ class MyMLP(object):
 
     def printPesos(self):
         print(self.weights)
+
+# In[]
+#execicio 1
+mlp = MLPClassifier(hidden_layer_sizes=(2))
+dadosX = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
+dadosY = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
+mlp.fit(dadosX, dadosY)
+print(mlp.predict(dadosX))
+
+# In[]
+print("exercicio 2")
+from sklearn import datasets
+from sklearn.model_selection import train_test_split,cross_val_score
+iris = datasets.load_iris()
+
+mlp = MLPClassifier(hidden_layer_sizes=(20,))
+
+scores = cross_val_score(mlp, iris.data, iris.target, cv=5, scoring='f1_macro')
+print(scores)
+
+# In[]
+print('exercicio 3')
+import pandas as pd 
+data = pd.read_csv("dataset_Facebook.csv") 
+# Preview the first 5 lines of the loaded data 
+data.head()
+data2 = pd.get_dummies(data)
+data2.head()
+data2.fillna(0, inplace=True)
+mlp = MLPClassifier(hidden_layer_sizes=(20,))
+dadosY = data2['total']
+dadosX = data2.drop(columns='total')
+print(dadosX.head())
+print(dadosY.head())
+
+scores = cross_val_score(mlp, dadosX, dadosY, cv=5, scoring='f1_macro')
+print(scores)
+
+
+
+# transformar os dados
+
+#%%
+
+#%%
