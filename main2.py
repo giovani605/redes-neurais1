@@ -203,13 +203,88 @@ class MyMLP(object):
 
 # In[]
 #execicio 1
-mlp = MLPClassifier(hidden_layer_sizes=(2))
+def testarMLP(dadosX,dadosY,mlp):
+    mlp.fit(dadosX,dadosY)
+    print('resultados do treinamento')
+    print('numerod de epocas ', mlp.n_iter_)
+    return mlp
+
+mlp = MLPClassifier(hidden_layer_sizes=(2),activation="logistic",solver="sgd",batch_size='1',verbose=True)
 dadosX = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
 dadosY = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
-mlp.fit(dadosX, dadosY)
-print(mlp.predict(dadosX))
+
+
+print('execiocio 1')
+print('batch vs padrao')
+print('---------treinamento por padrao---------')
+mlp = MLPClassifier(max_iter=2000,tol=0.0001, hidden_layer_sizes=(2),activation="logistic",solver="sgd",batch_size=1)
+testarMLP(dadosX,dadosY,mlp)
+
+print('---------treinamento por btrach---------')
+mlp = MLPClassifier(max_iter=2000,hidden_layer_sizes=(2),tol=0.0001,activation="logistic",solver="sgd")
+testarMLP(dadosX,dadosY,mlp)
+
+
+#In[]
+print('execiocio 2')
+print('taxa')
+
+taxa = 0.001
+soma = 0.100
+import pandas as pd
+resultados = []
+
+
+while taxa < 1.0:
+    print(taxa)
+    print('---------treinamento por padrao---------')
+    mlp = MLPClassifier(learning_rate_init=taxa, max_iter=2000,tol=0.0001, hidden_layer_sizes=(2),activation="logistic",solver="sgd",batch_size=1)
+    testarMLP(dadosX,dadosY,mlp)
+    res = [taxa,mlp.n_iter_,'padrão']
+    resultados.append(res)
+    print('---------treinamento por btrach---------')
+    mlp = MLPClassifier(learning_rate_init=taxa,max_iter=2000,hidden_layer_sizes=(2),tol=0.0001,activation="logistic",solver="sgd")
+    testarMLP(dadosX,dadosY,mlp)
+    taxa += soma
+    res = [taxa,mlp.n_iter_,'batch']
+    resultados.append(res)
+
+dados = pd.DataFrame(resultados, columns=['taxa','epoch','tipo'])
+dados.to_csv('resultadosEx2.csv')
+
 
 # In[]
+print('execiocio 3')
+print('neuronios')
+
+taxa = 0.01
+soma = 1
+import pandas as pd
+resultados = []
+n = 2
+
+
+while n <= 20:
+    print('numero de n ', n)
+    print('---------treinamento por padrao---------')
+    mlp = MLPClassifier(learning_rate_init=taxa, max_iter=2000,tol=0.0001, hidden_layer_sizes=(n),activation="logistic",solver="sgd",batch_size=1)
+    testarMLP(dadosX,dadosY,mlp)
+    res = [n,mlp.n_iter_,'padrão']
+    resultados.append(res)
+    print('---------treinamento por btrach---------')
+    mlp = MLPClassifier(learning_rate_init=taxa,max_iter=2000,hidden_layer_sizes=(n),tol=0.0001,activation="logistic",solver="sgd")
+    testarMLP(dadosX,dadosY,mlp)
+    n += soma
+    res = [n,mlp.n_iter_,'batch']
+    resultados.append(res)
+
+dados = pd.DataFrame(resultados, columns=['n','epoch','tipo'])
+dados.to_csv('resultadosEx2.csv')
+
+
+# In[]
+
+
 print("exercicio 2")
 from sklearn import datasets
 from sklearn.model_selection import train_test_split,cross_val_score
